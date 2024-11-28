@@ -2,8 +2,8 @@ name: test
 on: push
 jobs:
   test:
-    runs-on: ubunts-22.04
-    container: ryuichiueda/ubunts22.04-ros2:latest
+    runs-on: ubuntu-22.04
+    container: ryuichiueda/ubuntu22.04-ros2:latest
     steps:
       - uses: actions/checkout@v2
       - name: build and test
