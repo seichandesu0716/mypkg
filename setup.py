@@ -22,6 +22,7 @@ setup(
         'console_scripts': [
             'talker = mypkg.talker:main',
             'listener = mypkg.listener:main',
+            'shiftschedule = mypkg.shiftschedule:main'
         ],
     },
 )
