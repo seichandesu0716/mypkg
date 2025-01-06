@@ -2,10 +2,6 @@
 # SPDX-FileCopyrightText: 2024 Sei Takahashi <seitaka_0716_poke@yahoo.com>
 # SPDX-License-Identifier: BSD-3-Clause
 
-#!/usr/bin/python3
-# SPDX-FileCopyrightText: 2024 Sei Takahashi <seitaka_0716_poke@yahoo.com>
-# SPDX-License-Identifier: BSD-3-Clause
-
 import rclpy
 from rclpy.node import Node
 from std_msgs.msg import String

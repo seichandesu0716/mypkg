@@ -20,9 +20,9 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'talker = mypkg.talker:main',
-            'listener = mypkg.listener:main',
-            'shiftschedule = mypkg.shiftschedule:main'
+            #'talker = mypkg.talker:main',
+            #'listener = mypkg.listener:main',
+            'shift_publisher = mypkg.shift_publisher:main',
         ],
     },
 )
