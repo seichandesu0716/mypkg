@@ -20,8 +20,8 @@ class ShiftPublisher(Node):
         self.timer = self.create_timer(1.0, self.publish_shift_schedule)
 
         # ホールとキッチンのメンバー
-        self.hall_names = ["高橋", "佐々木", "辻"]
-        self.kitchen_names = ["落合", "森木"]
+        self.hall_names = ["高橋", "佐々木", "辻" ,"尾牛山" ,"坂上"]
+        self.kitchen_names = ["落合", "森木" ,"宮崎" ,"中村" ,"鈴木"]
 
     def publish_shift_schedule(self):
         # ランダムにシャッフル
