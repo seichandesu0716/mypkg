@@ -1,44 +1,34 @@
+# test.bashの変更
 #!/bin/bash
 
 echo "=== シフトスケジュールシステムテスト開始 ==="
 
-# ワークスペースをビルドする
+# ワークスペースをビルド
 colcon build
 source ~/ros2_ws/install/setup.bash
 
-# shift_publisher ノードを起動
+# shift_publisherノードを実行してログをファイルに出力
 echo "shift_publisher ノードを起動します..."
-ros2 run mypkg shift_publisher &
+ros2 run mypkg shift_publisher > /tmp/shift_schedule_output.log 2>&1 &
 
-# 少し待機（ノード起動を待つ）
-sleep 2
+# ノードが起動してしばらく待つ
+sleep 5
 
-# トピック /shift_schedule の出力をキャプチャする（10秒間）
+# トピック /shift_schedule のデータをファイルにキャプチャ
 echo "=== /shift_schedule トピックの出力 ==="
-timeout 10 ros2 topic echo /shift_schedule --no-arr > /tmp/shift_schedule_output.log
-topic_status=$?
+ros2 topic echo /shift_schedule > /tmp/shift_schedule_topic_output.log 2>&1 &
 
-# 終了ステータスを確認
-if [ $topic_status -eq 0 ]; then
-  echo "トピック出力に成功しました。"
-else
-  echo "トピックの出力に失敗しました。エラーコード: $topic_status"
-fi
-
-# ログファイルの内容を確認
+# キャプチャが終了した後、最後のログを表示
+sleep 3
 echo "=== ログファイルの内容 ==="
-cat /tmp/shift_schedule_output.log
+tail -n 20 /tmp/shift_schedule_topic_output.log
 
-# シフトスケジュールデータが出力されているかチェック
-if grep -q "日付:" /tmp/shift_schedule_output.log; then
+# 成功したか確認
+if grep -q "シフトスケジュール" /tmp/shift_schedule_topic_output.log; then
   echo "シフトスケジュールデータが正しく出力されました。成功です。"
 else
   echo "シフトスケジュールデータが出力されていません。エラーです。"
 fi
-
-# ノードを停止
-echo "shift_publisher ノードを停止します..."
-kill %1
 
 # 終了
 echo "=== シフトスケジュールシステムテスト終了 ==="
