@@ -15,7 +15,7 @@ sleep 2
 
 # トピック /shift_schedule の出力をキャプチャする
 echo "=== /shift_schedule トピックの出力 ==="
-ros2 topic echo /shift_schedule --qos-reliable --no-arr
+ros2 topic echo /shift_schedule --no-arr
 topic_status=$?
 
 # 終了ステータスを確認
