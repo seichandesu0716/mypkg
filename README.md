@@ -1,8 +1,17 @@
 # mypkg
 
+・このリポジトリはロボットシステム学の授業で使用したROS2のパッケージです
+
 # シフト作成コマンド
+
 ![test](https://github.com/seichandesu0716/robosys2024/actions/workflows/test.yml/badge.svg)
 ![license](https://img.shields.io/badge/license-BSD--3--Clause-green?style=flat)
+
+**概要**
+
+shift_publisherは1秒ごとにシフトのメンバーからランダムで2人選び、日付順に表示する機能を持ちます
+
+バイトのシフトを作成し、トピックshift_scheduleに定期的にパブリッシュするノードです
 
 # コマンドと実行例
 
@@ -45,6 +54,13 @@ data: '日付: 2025-01-06
 # 参考資料
 
 バッジの作成・・・https://shields.io/badges
+
+# テスト環境、 必要なソフトウェア
+・Ubuntu20.04.6 LTS on Windows
+
+・ROS2_Foxy
+
+・Python
 
 # ライセンスと著作物
 ・このソフトウェアパッケージは、3条項BSDライセンスの下、再頒布および使用が許可されます
