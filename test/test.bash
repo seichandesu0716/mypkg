@@ -13,9 +13,9 @@ ros2 run mypkg shift_publisher &
 # 少し待機（ノード起動を待つ）
 sleep 2
 
-# トピック /shift_schedule の出力をキャプチャする
+# トピック /shift_schedule の出力をキャプチャする（10秒間）
 echo "=== /shift_schedule トピックの出力 ==="
-ros2 topic echo /shift_schedule --no-arr
+timeout 10 ros2 topic echo /shift_schedule --no-arr > /tmp/shift_schedule_output.log
 topic_status=$?
 
 # 終了ステータスを確認
@@ -27,11 +27,10 @@ fi
 
 # ログファイルの内容を確認
 echo "=== ログファイルの内容 ==="
-log_file="/tmp/shift_schedule_output.log"
-cat $log_file
+cat /tmp/shift_schedule_output.log
 
 # シフトスケジュールデータが出力されているかチェック
-if grep -q "日付:" $log_file; then
+if grep -q "日付:" /tmp/shift_schedule_output.log; then
   echo "シフトスケジュールデータが正しく出力されました。成功です。"
 else
   echo "シフトスケジュールデータが出力されていません。エラーです。"
