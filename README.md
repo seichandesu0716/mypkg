@@ -56,10 +56,8 @@ data: '日付: 2025-01-06
 バッジの作成・・・https://shields.io/badges
 
 # テスト環境、 必要なソフトウェア
-・Ubuntu20.04.6 LTS on Windows
-
-・ROS2_Foxy
-
+・Ubuntu20.04.6 LTS on Windows(ROS2_Foxy)
+・Ubuntu22.04 (ROS2_Humble)
 ・Python
 
 # ライセンスと著作物
