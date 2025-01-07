@@ -58,6 +58,8 @@ data: '日付: 2025-01-06
 # テスト環境、 必要なソフトウェア
 ・Ubuntu20.04.6 LTS on Windows
 
+・ROS2_Foxy
+
 ・Python
 
 # ライセンスと著作物
