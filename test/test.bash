@@ -6,9 +6,9 @@
 dir=~
 [ "$1" != "" ] && dir="$1"  # 引数があればディレクトリを変更
 
-cd $dir/ros2_ws || exit 1
+cd $dir/ros2_ws
 colcon build
-source /opt/ros/foxy/setup.bash  # 必須: ROS 2の環境変数を設定
+source $dir/.bashrc  # 必須: ROS 2の環境変数を設定
 
 LOG_FILE="/tmp/mypkg_crypto_test.log"
 
