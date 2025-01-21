@@ -8,9 +8,9 @@ dir=~
 [ "$1" != "" ] && dir="$1"  # 引数があればディレクトリを変更
 
 # ROS 2ワークスペースに移動してビルド
-cd $dir/ros2_ws || { echo "ROS 2 ワークスペースが見つかりません。"; exit 1; }
+cd $dir/ros2_ws || exit 1
 colcon build
-source $dir/ros2_ws/install/setup.bash  # 必須: ROS 2の環境変数を設定
+source /opt/ros2_ws/foxy/setup.bash  # 必須: ROS 2の環境変数を設定
 
 # 出力ログファイル
 LOG_FILE="/tmp/mypkg_crypto_test.log"
