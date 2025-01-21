@@ -22,9 +22,6 @@ $ ros2 run mypkg shift_publisher
 **端末2**
 ~~~
 $ ros2 topic echo /shift_schedule
-~~~
-**実行例**
-~~~
 data: '日付: 2025-01-04
 
   シフトスケジュール:
@@ -57,7 +54,9 @@ data: '日付: 2025-01-06
 
 # テスト環境、 必要なソフトウェア
 ・Ubuntu20.04.6 LTS on Windows(ROS2_Foxy)
+
 ・Ubuntu22.04 (ROS2_Humble)
+
 ・Python
 
 # ライセンスと著作物
