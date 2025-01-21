@@ -1,57 +1,37 @@
 #!/bin/bash
+
+# SPDX-FileCopyrightText: 2024 Sei Takahashi <seitaka_0716_poke@yahoo.com>
 # SPDX-License-Identifier: BSD-3-Clause
 
-echo "=== シフトスケジュールテスト開始 ==="
-
-# デフォルトのディレクトリを設定
+# 初期設定
 dir=~
-[ "$1" != "" ] && dir="$1"
+[ "$1" != "" ] && dir="$1"  # 引数があればディレクトリを変更
 
-# ワークスペースに移動
-cd "$dir/ros2_ws" || { echo "ワークスペースに移動できません: $dir/ros2_ws"; exit 1; }
+# ROS 2ワークスペースに移動してビルド
+cd $dir/ros2_ws || { echo "ROS 2 ワークスペースが見つかりません。"; exit 1; }
+colcon build
+source $dir/ros2_ws/install/setup.bash
 
-# ビルドと環境設定
-echo "ビルドを開始します..."
-colcon build || { echo "ビルドに失敗しました"; exit 1; }
+# 出力ログファイル
+LOG_FILE="/tmp/mypkg_crypto_test.log"
 
-source "$dir/.bashrc"
-source /opt/ros/foxy/setup.bash || { echo "ROS 2 環境のセットアップに失敗しました"; exit 1; }
+# 仮想通貨価格のノードをバックグラウンドで実行
+echo "仮想通貨価格ノードをバックグラウンドで起動中..."
+ros2 run mypkg crypto_price_publisher > "$LOG_FILE" &
+NODE_PID=$!
 
-# shift_publisher ノードをバックグラウンドで起動
-echo "ShiftPublisher ノードを起動します..."
-timeout 20 ros2 run mypkg shift_publisher > /dev/null 2>&1 &
-publisher_pid=$!
+# トピックの内容を一定時間監視してログを収集
+echo "トピック /crypto_prices ..."
+timeout 10 ros2 topic echo /crypto_prices > /tmp/mypkg_topic_test.log
 
-# トピックが発行されるのを待つ
-echo "トピック /shift_schedule の公開を待機中..."
-sleep 5
+# ノードを終了
+kill $NODE_PID
 
-# トピック /shift_schedule のデータを取得
-echo "トピック /shift_schedule のデータをキャプチャ中..."
-timeout 15 ros2 topic echo /shift_schedule > /tmp/shift_schedule.log || {
-    echo "トピックデータの取得に失敗しました";
-    kill $publisher_pid 2>/dev/null
-    exit 1;
-}
-
-# ログ内容を確認
-echo "=== ログ内容 ==="
-cat /tmp/shift_schedule.log
-
-if grep -q 'シフトスケジュール:' /tmp/shift_schedule.log; then
-    echo "テスト成功: シフトスケジュールデータが正しく出力されました。"
+# トピックログを検証
+if grep -q '仮想通貨価格' "$LOG_FILE"; then
+    echo "テスト成功: ログに仮想通貨価格が含まれています。"
+    exit 0
 else
-    echo "テスト失敗: シフトスケジュールデータが見つかりません。"
+    echo "テスト失敗: ログに仮想通貨価格が含まれていません。"
+    exit 1
 fi
-
-# ShiftPublisher ノードを終了
-if ps -p $publisher_pid > /dev/null 2>&1; then
-    echo "ShiftPublisher ノードを終了します..."
-    kill $publisher_pid 2>/dev/null
-fi
-
-# 一時ファイルを削除
-rm -f /tmp/shift_schedule.log
-
-echo "=== シフトスケジュールテスト終了 ==="
-
