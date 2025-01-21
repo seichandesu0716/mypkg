@@ -17,34 +17,66 @@ shift_publisherは1秒ごとにシフトのメンバーからランダムで2人
 
 **端末1**
 ~~~
-$ ros2 run mypkg shift_publisher
+$ ros2 run mypkg crypto_price_publisher
 ~~~
 **端末2**
 ~~~
-$ ros2 topic echo /shift_schedule
-data: '日付: 2025-01-04
+$ $ ros2 topic echo /crypto_prices
+data: '時刻: 2025-01-22 06:04:00
 
-  シフトスケジュール:
+  仮想通貨価格:
 
-  ホール: 高橋, 佐々木
+  BTC: $24882.96
 
-  キッチン: 鈴木, 中村'
+  ETH: $1526.7
+
+  XRP: $0.5
+
+  LTC: $99.48
+
+  '
 ---
-data: '日付: 2025-01-05
+data: '時刻: 2025-01-22 06:04:01
 
-  シフトスケジュール:
+  仮想通貨価格:
 
-  ホール: 坂上, 佐々木
+  BTC: $25031.85
 
-  キッチン: 森木, 鈴木'
+  ETH: $1527.72
+
+  XRP: $0.5
+
+  LTC: $98.81
+
+  '
 ---
-data: '日付: 2025-01-06
+data: '時刻: 2025-01-22 06:04:02
 
-  シフトスケジュール:
+  仮想通貨価格:
 
-  ホール: 佐々木, 辻
+  BTC: $24886.57
 
-  キッチン: 森木, 鈴木'
+  ETH: $1515.38
+
+  XRP: $0.5
+
+  LTC: $98.7
+
+  '
+---
+data: '時刻: 2025-01-22 06:04:03
+
+  仮想通貨価格:
+
+  BTC: $25028.67
+
+  ETH: $1520.74
+
+  XRP: $0.5
+
+  LTC: $99.14
+
+  '
 ---
 ~~~
  
@@ -52,7 +84,6 @@ data: '日付: 2025-01-06
 
 バッジの作成・・・https://shields.io/badges
 
-https://qiita.com/Takahari20123030/items/ce2771fdc31b0a0c6a97
 
 # テスト環境、 必要なソフトウェア
 ・Ubuntu20.04.6 LTS on Windows(ROS2_Foxy)
