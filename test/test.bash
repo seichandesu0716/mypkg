@@ -24,13 +24,19 @@ NODE_PID=$!
 echo "トピック /crypto_prices を監視中..."
 timeout 10 ros2 topic echo /crypto_prices > /tmp/mypkg_topic_test.log
 
-# ノードを終了
-kill $NODE_PID
 
-if grep -q '仮想通貨価格' "$LOG_FILE"; then
-    echo "テスト成功: ログに仮想通貨価格が含まれています。"
+# トピックログを検証
+if grep -q '仮想通貨価格' /tmp/mypkg_topic_test.log; then
+    echo "テスト成功: トピック /crypto_prices に仮想通貨価格が含まれています。"
+    echo "==== トピックログの内容 ===="
+    cat /tmp/mypkg_topic_test.log
+    echo "==========================="
     exit 0
 else
-    echo "テスト失敗: ログに仮想通貨価格が含まれていません。"
+    echo "テスト失敗: トピック /crypto_prices に仮想通貨価格が含まれていません。"
+    echo "==== トピックログの内容 ===="
+    cat /tmp/mypkg_topic_test.log
+    echo "==========================="
     exit 1
 fi
+
