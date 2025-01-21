@@ -10,7 +10,7 @@ dir=~
 # ROS 2ワークスペースに移動してビルド
 cd $dir/ros2_ws || { echo "ROS 2 ワークスペースが見つかりません。"; exit 1; }
 colcon build
-source $dir/ros2_ws/install/setup.bash
+source $dir/ros2_ws/install/setup.bash  # 必須: ROS 2の環境変数を設定
 
 # 出力ログファイル
 LOG_FILE="/tmp/mypkg_crypto_test.log"
@@ -21,13 +21,12 @@ ros2 run mypkg crypto_price_publisher > "$LOG_FILE" &
 NODE_PID=$!
 
 # トピックの内容を一定時間監視してログを収集
-echo "トピック /crypto_prices ..."
+echo "トピック /crypto_prices を監視中..."
 timeout 10 ros2 topic echo /crypto_prices > /tmp/mypkg_topic_test.log
 
 # ノードを終了
 kill $NODE_PID
 
-# トピックログを検証
 if grep -q '仮想通貨価格' "$LOG_FILE"; then
     echo "テスト成功: ログに仮想通貨価格が含まれています。"
     exit 0
