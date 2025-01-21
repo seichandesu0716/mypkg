@@ -5,41 +5,49 @@
 import rclpy
 from rclpy.node import Node
 from std_msgs.msg import String
-import random
-from datetime import datetime, timedelta
+import requests
+from datetime import datetime
 
-class ShiftPublisher(Node):
+class CryptoPricePublisher(Node):
     def __init__(self):
-        super().__init__("shift_publisher")
-        self.publisher_ = self.create_publisher(String, "shift_schedule", 10)
+        super().__init__("crypto_price_publisher")
+        self.publisher_ = self.create_publisher(String, "crypto_prices", 10)
 
-        self.current_date = datetime(2024, 12, 30)
+        # 毎秒価格を発行
+        self.timer = self.create_timer(1.0, self.publish_price)
 
-        self.timer = self.create_timer(1.0, self.publish_shift_schedule)
+        # CoinGecko APIのURL
+        self.api_url = "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd"
 
-        self.hall_names = ["高橋", "佐々木", "辻", "尾牛山", "坂上"]
-        self.kitchen_names = ["落合", "森木", "宮崎", "中村", "鈴木"]
+    def fetch_btc_price(self):
+        """CoinGecko APIを使ってビットコインの価格を取得"""
+        try:
+            response = requests.get(self.api_url)
+            data = response.json()
+            return data['bitcoin']['usd']
+        except Exception as e:
+            self.get_logger().error(f"API取得エラー: {str(e)}")
+            return None
 
-    def publish_shift_schedule(self):
-        selected_hall_names = random.sample(self.hall_names, 2)  # ホールは2人選択
-        selected_kitchen_names = random.sample(self.kitchen_names, 2)  # キッチンは2人選択
+    def publish_price(self):
+        """ビットコインのリアルタイム価格を発行"""
+        price = self.fetch_btc_price()
+        if price is not None:
+            date_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-        date_str = self.current_date.strftime("%Y-%m-%d")
+            # メッセージを生成
+            message_data = f"時刻: {date_time}\nビットコイン価格:\n  - BTC: ${price}"
 
-        hall_schedule = f"ホール: {', '.join(selected_hall_names)}"
+            # トピックに発行
+            price_message = String()
+            price_message.data = message_data
+            self.publisher_.publish(price_message)
 
-        kitchen_schedule = f"キッチン: {', '.join(selected_kitchen_names)}"
-
-        shift_message = String()
-        shift_message.data = f"日付: {date_str}\nシフトスケジュール:\n{hall_schedule}\n{kitchen_schedule}"
-
-        self.publisher_.publish(shift_message)
-shiftschedule.py
-        self.current_date += timedelta(days=1)
+            # 標準出力に確認用メッセージを表示
+            print(f"Published:\n{price_message.data}")
 
 def main():
     rclpy.init()
     node = ShiftPublisher()
     rclpy.spin(node)
     rclpy.shutdown()
-

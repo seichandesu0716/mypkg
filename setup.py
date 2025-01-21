@@ -22,8 +22,9 @@ setup(
         'console_scripts': [
             #'talker = mypkg.talker:main',
             #'listener = mypkg.listener:main',
-        
-             'shift_publisher = mypkg.shiftschedule:main',
-        ],
+        #'forex_publisher = mypkg.forex_publisher:main'
+             #'btc_publisher = mypkg.btc_publisher:main',  
+            'crypto_price_publisher = mypkg.crypto_price_publisher:main'
+             ],
     },
 )
