@@ -22,9 +22,6 @@ $ ros2 run mypkg shift_publisher
 **端末2**
 ~~~
 $ ros2 topic echo /shift_schedule
-~~~
-**実行例**
-~~~
 data: '日付: 2025-01-04
 
   シフトスケジュール:
