@@ -1,67 +1,57 @@
 #!/bin/bash
-# SPDX-FileCopyrightText: 2024 Sei Takahashi <seitaka_0716_poke@yahoo.com>
 # SPDX-License-Identifier: BSD-3-Clause
 
-echo "=== シフトスケジュールシステムテスト開始 ==="
+echo "=== シフトスケジュールテスト開始 ==="
 
-colcon build
-source ~/ros2_ws/install/setup.bash
+# デフォルトのディレクトリを設定
+dir=~
+[ "$1" != "" ] && dir="$1"
 
-echo "shift_publisher ノードを確認します"
-running_nodes=$(ros2 node list | grep "/shift_publisher")
+# ワークスペースに移動
+cd "$dir/ros2_ws" || { echo "ワークスペースに移動できません: $dir/ros2_ws"; exit 1; }
 
-if [ -n "$running_nodes" ]; then
-    echo "既存のshift_publisher ノードがあります。対応するプロセスを停止します"
-    existing_pids=$(pgrep -f "ros2 run mypkg shift_publisher")
+# ビルドと環境設定
+echo "ビルドを開始します..."
+colcon build || { echo "ビルドに失敗しました"; exit 1; }
 
-    if [ -n "$existing_pids" ]; then
-        echo "停止するプロセスID: $existing_pids"
-        kill $existing_pids
-        sleep 2 
-    fi
+source "$dir/.bashrc"
+source /opt/ros/foxy/setup.bash || { echo "ROS 2 環境のセットアップに失敗しました"; exit 1; }
 
-    remaining_pids=$(pgrep -f "ros2 run mypkg shift_publisher")
-    if [ -n "$remaining_pids" ]; then
-        echo "強制終了します"
-        kill -9 $remaining_pids
-        sleep 1
-    fi
-fi
+# shift_publisher ノードをバックグラウンドで起動
+echo "ShiftPublisher ノードを起動します..."
+timeout 20 ros2 run mypkg shift_publisher > /dev/null 2>&1 &
+publisher_pid=$!
 
-echo "新しい shift_publisher ノードを起動します"
-timeout 15s ros2 run mypkg shift_publisher > /tmp/shift_schedule_output.log 2>&1 &
-shift_publisher_pid=$!
+# トピックが発行されるのを待つ
+echo "トピック /shift_schedule の公開を待機中..."
+sleep 5
 
-sleep 10
+# トピック /shift_schedule のデータを取得
+echo "トピック /shift_schedule のデータをキャプチャ中..."
+timeout 15 ros2 topic echo /shift_schedule > /tmp/shift_schedule.log || {
+    echo "トピックデータの取得に失敗しました";
+    kill $publisher_pid 2>/dev/null
+    exit 1;
+}
 
-echo "=== /shift_schedule トピックの出力 ==="
-timeout 20 ros2 topic echo /shift_schedule > /tmp/shift_schedule_topic_output.log 2>&1 &
-topic_capture_pid=$!
+# ログ内容を確認
+echo "=== ログ内容 ==="
+cat /tmp/shift_schedule.log
 
-sleep 10
-echo "=== ログファイルの内容 ==="
-tail -n 20 /tmp/shift_schedule_topic_output.log
-
-if grep -q "シフトスケジュール" /tmp/shift_schedule_topic_output.log; then
-  echo "シフトスケジュールデータが正しく出力されました。成功です。"
+if grep -q 'シフトスケジュール:' /tmp/shift_schedule.log; then
+    echo "テスト成功: シフトスケジュールデータが正しく出力されました。"
 else
-  echo "シフトスケジュールデータが出力されていません。エラーです。"
+    echo "テスト失敗: シフトスケジュールデータが見つかりません。"
 fi
 
-if ps -p $shift_publisher_pid > /dev/null; then
-    echo "shift_publisher ノードを終了します (PID: $shift_publisher_pid)..."
-    kill $shift_publisher_pid
-    sleep 1
+# ShiftPublisher ノードを終了
+if ps -p $publisher_pid > /dev/null 2>&1; then
+    echo "ShiftPublisher ノードを終了します..."
+    kill $publisher_pid 2>/dev/null
 fi
 
-if ps -p $topic_capture_pid > /dev/null; then
-    echo "トピックキャプチャプロセスを終了します (PID: $topic_capture_pid)..."
-    kill $topic_capture_pid
-    sleep 1
-fi
+# 一時ファイルを削除
+rm -f /tmp/shift_schedule.log
 
-echo "=== 現在のノードリスト ==="
-ros2 node list
-
-echo "=== シフトスケジュールシステムテスト終了 ==="
+echo "=== シフトスケジュールテスト終了 ==="
 

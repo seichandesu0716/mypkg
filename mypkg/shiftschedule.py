@@ -34,7 +34,7 @@ class ShiftPublisher(Node):
         shift_message.data = f"日付: {date_str}\nシフトスケジュール:\n{hall_schedule}\n{kitchen_schedule}"
 
         self.publisher_.publish(shift_message)
-
+shiftschedule.py
         self.current_date += timedelta(days=1)
 
 def main():
