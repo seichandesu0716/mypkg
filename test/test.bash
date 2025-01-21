@@ -10,7 +10,7 @@ dir=~
 # ROS 2ワークスペースに移動してビルド
 cd $dir/ros2_ws || exit 1
 colcon build
-source /root/ros2_ws/install/setup.bash  # 必須: ROS 2の環境変数を設定
+source /opt/ros/foxy/setup.bash  # 必須: ROS 2の環境変数を設定
 
 # 出力ログファイル
 LOG_FILE="/tmp/mypkg_crypto_test.log"
